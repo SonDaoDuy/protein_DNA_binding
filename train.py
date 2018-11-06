@@ -1,0 +1,143 @@
+import time
+from options.train_options import TrainOptions
+from data.custom_dataset_dataloader import CustomDatasetDataLoader
+from models.models import ModelsFactory
+from collections import OrderedDict
+import os
+
+class Train:
+	"""docstring for Train"""
+	def __init__(self):
+		self._opt = TrainOptions().parse()
+		self._save_path = os.path.join(self._opt.checkpoints_dir, self._opt.name)
+		self._log_path_train = os.path.join(self._save_path, 'loss_log_train.txt')
+		self._log_path_val = os.path.join(self._save_path, 'loss_log_val.txt')
+		
+		data_loader_train = CustomDatasetDataLoader(self._opt, is_for_train=True)
+		data_loader_test = CustomDatasetDataLoader(self._opt, is_for_train=False)
+
+		self._dataset_train = data_loader_train.load_data()
+		self._dataset_test = data_loader_test.load_data()
+
+		self._dataset_train_size = len(data_loader_train)
+		self._dataset_test_size = len(data_loader_test)
+		print('#train sequences = %d' % self._dataset_train_size)
+		print('#validate sequences = %d' % self._dataset_test_size)
+
+		self._model = ModelsFactory.get_by_name(self._opt.model, self._opt)
+
+		self._train()
+
+	def _train(self):
+		self._total_steps = self._opt.load_epoch * self._dataset_train_size
+		self._iters_per_epoch = self._dataset_train_size / self._opt.batch_size
+		self._last_print_time = time.time()
+
+		for i_epoch in range(self._opt.load_epoch + 1, self._opt.total_epoch + 1):
+			epoch_start_time = time.time()
+
+			#train epoch
+			self._train_epoch(i_epoch)
+
+			#save_model
+			print('saving the model at the end of epoch %d, iters %d' % (i_epoch, self._total_steps))
+			self._model.save(i_epoch)
+
+			# print epoch info
+			time_epoch = time.time() - epoch_start_time
+			print('End of epoch %d / %d \t Time Taken: %d sec (%d min or %d h)' %
+				(i_epoch, self._opt.total_epoch, time_epoch, time_epoch / 60, time_epoch / 3600))
+
+	def _train_epoch(self, i_epoch):
+		epoch_iter = 0
+		train_error = OrderedDict()
+		self._model.set_train()
+		for i_train_batch, train_batch in enumerate(self._dataset_train):
+			iter_start_time = time.time()
+
+			# train model
+			self._model.set_input(train_batch)
+			self._model.optimize_parameters()
+
+			# update epoch info
+			self._total_steps += self._opt.batch_size
+			epoch_iter += self._opt.batch_size
+			errors = self._model.get_current_errors()
+			for k, v in errors.items():
+				if k in train_error:
+				    train_error[k] += v
+				else:
+				    train_error[k] = v
+
+		for k in train_error.keys():
+			train_error[k] /= i_train_batch
+		
+		# display train and val error
+		t = (time.time() - iter_start_time)
+		self._print_current_train_errors(i_epoch, train_error, t)
+		self._display_visualizer_val(i_epoch)
+		#self._last_print_time = time.time()
+
+		# save model
+		print('saving the latest model (epoch %d, total_steps %d)' % (i_epoch, self._total_steps))
+		self._model.save(i_epoch)
+		#self._last_save_latest_time = time.time()
+		
+	def _display_visualizer_val(self, i_epoch):
+		val_start_time = time.time()
+
+		#set model to eval mode
+		self._model.set_eval()
+
+		#evaluate
+		val_error = OrderedDict()
+
+		for i_val_batch, val_batch in enumerate(self._dataset_test):
+			self._model.set_input(val_batch)
+			self._model.forward()
+			errors = self._model.get_current_errors()
+			# store current batch errors
+			for k, v in errors.items():
+				if k in val_error:
+					val_error[k] += v
+				else:
+					val_error[k] = v
+
+		for k in val_error.keys():
+			val_error[k] /= i_val_batch
+
+		#visualize
+		#print and save val loss
+		print("val_error:")
+		print(val_error)
+		t = (time.time() - val_start_time)
+		self._print_current_validate_errors(i_epoch, val_error, t)
+
+		#set back to train
+		self._model.set_train()
+
+	def _print_current_train_errors(self, epoch, errors, t):
+		log_time = time.strftime("[%d/%m/%Y %H:%M:%S]")
+		message = '%s, epoch: %d, t/smpl: %.3fs, ' % (log_time, epoch, t)
+		for k, v in errors.items():
+			message += '%s: %.3f ' % (k, v)
+
+		print(message)
+		with open(self._log_path_train, "a") as log_file:
+			log_file.write('%s\n' % message)
+
+	def _print_current_validate_errors(self, epoch, errors, t):
+		log_time = time.strftime("[%d/%m/%Y %H:%M:%S]")
+		message = '%s, V, epoch: %d, time_to_val: %ds, ' % (log_time, epoch, t)
+		for k, v in errors.items():
+			message += '%s: %.3f ' % (k, v)
+
+		print(message)
+		with open(self._log_path_val, "a") as log_file:
+			log_file.write('%s\n' % message)
+
+if __name__ == '__main__':
+	Train()
+
+
+

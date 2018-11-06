@@ -1,0 +1,46 @@
+[07/11/2018 00:11:22], V, epoch: 1, time_to_val: 0s, 
+[07/11/2018 00:11:24], V, epoch: 2, time_to_val: 0s, 
+[07/11/2018 00:11:27], V, epoch: 3, time_to_val: 0s, 
+[07/11/2018 00:11:29], V, epoch: 4, time_to_val: 0s, 
+[07/11/2018 00:11:31], V, epoch: 5, time_to_val: 0s, 
+[07/11/2018 00:11:33], V, epoch: 6, time_to_val: 0s, 
+[07/11/2018 00:11:35], V, epoch: 7, time_to_val: 0s, 
+[07/11/2018 00:11:38], V, epoch: 8, time_to_val: 0s, 
+[07/11/2018 00:11:40], V, epoch: 9, time_to_val: 0s, 
+[07/11/2018 00:11:42], V, epoch: 10, time_to_val: 0s, 
+[07/11/2018 00:11:45], V, epoch: 11, time_to_val: 0s, 
+[07/11/2018 00:11:47], V, epoch: 12, time_to_val: 0s, 
+[07/11/2018 00:11:49], V, epoch: 13, time_to_val: 0s, 
+[07/11/2018 00:12:35], V, epoch: 14, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:12:38], V, epoch: 15, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:12:41], V, epoch: 16, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:12:43], V, epoch: 17, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:12:46], V, epoch: 18, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:12:49], V, epoch: 19, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:12:51], V, epoch: 20, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:12:54], V, epoch: 21, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:12:57], V, epoch: 22, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:12:59], V, epoch: 23, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:13:02], V, epoch: 24, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:13:04], V, epoch: 25, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:13:07], V, epoch: 26, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:13:10], V, epoch: 27, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:13:13], V, epoch: 28, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:13:25], V, epoch: 29, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:13:28], V, epoch: 30, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:13:31], V, epoch: 31, time_to_val: 1s, net_loss: inf 
+[07/11/2018 00:13:34], V, epoch: 32, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:13:37], V, epoch: 33, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:13:39], V, epoch: 34, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:13:42], V, epoch: 35, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:13:45], V, epoch: 36, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:13:48], V, epoch: 37, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:13:50], V, epoch: 38, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:13:53], V, epoch: 39, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:13:55], V, epoch: 40, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:13:58], V, epoch: 41, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:14:01], V, epoch: 42, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:14:03], V, epoch: 43, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:14:06], V, epoch: 44, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:14:09], V, epoch: 45, time_to_val: 0s, net_loss: inf 
+[07/11/2018 00:14:12], V, epoch: 46, time_to_val: 0s, net_loss: inf 
