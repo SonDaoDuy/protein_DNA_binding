@@ -12,7 +12,7 @@ class Train:
 	"""docstring for Train"""
 	def __init__(self, seed):
 		self._opt = TrainOptions().parse()
-		self._save_path = os.path.join(self._opt.checkpoints_dir, (self._opt.name + '_' + str(seed)))
+		self._save_path = os.path.join(self._opt.checkpoints_dir, self._opt.name)
 		util.mkdirs(self._save_path)
 		self._log_path_train = os.path.join(self._save_path, 'loss_log_train.txt')
 		self._log_path_val = os.path.join(self._save_path, 'loss_log_val.txt')
@@ -165,28 +165,30 @@ class Train:
 			log_file.write('%s\n' % message)
 
 def main():
+	_opt = TrainOptions().parse()
 	file_data = 'D:\\TargetDNA\\sample_dataset\\data_dna.pkl'
 	file_train = 'D:\\TargetDNA\\sample_dataset\\train_ids.csv'
 	file_val = 'D:\\TargetDNA\\sample_dataset\\val_ids.csv'
 	split = 5
+	seed = _opt.seed
 	with open(file_data, 'rb') as f:
 		data = pickle.load(f)
 
 	data_size = len(data)
 	fold_size = int(data_size/5)
-	for seed in range(split):
-		hold_data = [k for k in range(0,data_size)]
-		val_part = [k for k in range(seed*fold_size, (seed+1)*fold_size)]
-		train_part = list(set(hold_data) - set(val_part))
-		with open(file_train, 'w') as f:
-			for item in train_part:
-				f.write("%s\n" % item)
+	
+	hold_data = [k for k in range(0,data_size)]
+	val_part = [k for k in range(seed*fold_size, (seed+1)*fold_size)]
+	train_part = list(set(hold_data) - set(val_part))
+	with open(file_train, 'w') as f:
+		for item in train_part:
+			f.write("%s\n" % item)
 
-		with open(file_val, 'w') as f:
-			for item in val_part:
-				f.write("%s\n" % item)
+	with open(file_val, 'w') as f:
+		for item in val_part:
+			f.write("%s\n" % item)
 
-		Train(seed)
+	Train(seed)
 
 
 if __name__ == '__main__':
