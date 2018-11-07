@@ -13,8 +13,8 @@ def main():
 	count = 0
 	for record in  SeqIO.parse(data_file, "fasta"):
 		index = 0
-		while index+10 < len(record.seq):
-			print(index)
+		while index+10 <= len(record.seq):
+			#print(index)
 			data.append(record.seq[index:(index+10)])
 			# print(data[count])
 			index += 1
@@ -29,7 +29,7 @@ def main():
 	count = 0
 	for record in  SeqIO.parse(label_file, "fasta"):
 		index = 0
-		while index+10 < len(record.seq):
+		while index+10 <= len(record.seq):
 			item = [int(k) for k in record.seq[index:index+10]]
 			label.append(item)
 			index += 1
@@ -41,7 +41,9 @@ def main():
 
 	#save to pkl file
 	packed_data = dict()
+	print(len(data))
 	for i in range(len(data)):
+		#print(i)
 		packed_data[data[i]] = label[i]
 
 	with open(dna_data_file, 'wb') as f:

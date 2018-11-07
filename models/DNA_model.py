@@ -45,8 +45,9 @@ class DNAmodel(BaseModel):
 		self._current_lr_net = self._opt.lr_net
 
 		#init optimizer
-		self._optimizer_net = torch.optim.Adam(self._net.parameters(), lr=self._current_lr_net,
-			betas=[self._opt.adam_b1, self._opt.adam_b2])
+		self._optimizer_net = torch.optim.SGD(self._net.parameters(), lr=0.1, momentum=0.9)
+		# self._optimizer_net = torch.optim.Adam(self._net.parameters(), lr=self._current_lr_net,
+		# 	betas=[self._opt.adam_b1, self._opt.adam_b2])
 
 	def _init_prefetch_inputs(self):
 		self._input_sequence = self._Tensor(self._opt.batch_size, 1, self._opt.seq_size, self._opt.seq_size)
@@ -55,9 +56,11 @@ class DNAmodel(BaseModel):
 	def _init_losses(self):
 		#define loss function
 		if len(self._gpu_ids) > 0:
-			self._criterion_net = torch.nn.MSELoss().cuda()
+			#self._criterion_net = torch.nn.MSELoss().cuda()
+			self._criterion_net = torch.nn.BCELoss().cuda()
 		else:
-			self._criterion_net = torch.nn.MSELoss()
+			self._criterion_net = torch.nn.BCELoss()
+			#self._criterion_net = torch.nn.MSELoss()
 
 		#define loss
 		self._net_loss = Variable(self._Tensor([0]))
@@ -79,6 +82,10 @@ class DNAmodel(BaseModel):
 		self._is_train = False
 
 	def forward(self):
+		tp = 0
+		fp = 0
+		tn = 0
+		fn = 0
 		if not self._is_train:
 			#convert sequence to variables
 			input_seq = Variable(self._input_sequence, volatile=True)
@@ -88,7 +95,23 @@ class DNAmodel(BaseModel):
 			predict = self._net(input_seq)
 
 			#return something here for validation
-			#self._net_loss = self._criterion_net(predict, label)
+			self._net_loss = self._criterion_net(predict, label)
+			
+			#metric calcalate
+			for i in range(predict.size(0)):
+				for j in range(predict.size(1)):
+					if predict[i][j] < self._opt.threshold:
+						if label[i][j] == 0:
+							tn += 1
+						else:
+							fn += 1
+					else:
+						if label[i][j] == 0:
+							fp += 1
+						else:
+							tp += 1
+
+			return tp, fp, tn, fn
 
 	def optimize_parameters(self):
 		if self._is_train:

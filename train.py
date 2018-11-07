@@ -4,15 +4,19 @@ from data.custom_dataset_dataloader import CustomDatasetDataLoader
 from models.models import ModelsFactory
 from collections import OrderedDict
 import os
+import pickle
+from utils import util
+import math
 
 class Train:
 	"""docstring for Train"""
-	def __init__(self):
+	def __init__(self, seed):
 		self._opt = TrainOptions().parse()
-		self._save_path = os.path.join(self._opt.checkpoints_dir, self._opt.name)
+		self._save_path = os.path.join(self._opt.checkpoints_dir, (self._opt.name + '_' + str(seed)))
+		util.mkdirs(self._save_path)
 		self._log_path_train = os.path.join(self._save_path, 'loss_log_train.txt')
 		self._log_path_val = os.path.join(self._save_path, 'loss_log_val.txt')
-		
+		self._log_path_val_metric = os.path.join(self._save_path, 'loss_log_val_metric.txt')
 		data_loader_train = CustomDatasetDataLoader(self._opt, is_for_train=True)
 		data_loader_test = CustomDatasetDataLoader(self._opt, is_for_train=False)
 
@@ -40,8 +44,8 @@ class Train:
 			self._train_epoch(i_epoch)
 
 			#save_model
-			print('saving the model at the end of epoch %d, iters %d' % (i_epoch, self._total_steps))
-			self._model.save(i_epoch)
+			# print('saving the model at the end of epoch %d, iters %d' % (i_epoch, self._total_steps))
+			# self._model.save(i_epoch)
 
 			# print epoch info
 			time_epoch = time.time() - epoch_start_time
@@ -91,10 +95,18 @@ class Train:
 
 		#evaluate
 		val_error = OrderedDict()
+		tp = 0
+		fp = 0
+		tn = 0
+		fn = 0
 
 		for i_val_batch, val_batch in enumerate(self._dataset_test):
 			self._model.set_input(val_batch)
-			self._model.forward()
+			tp_batch, fp_batch, tn_batch, fn_batch = self._model.forward()
+			tp += tp_batch
+			fp += fp_batch
+			tn += tn_batch
+			fn += fn_batch
 			errors = self._model.get_current_errors()
 			# store current batch errors
 			for k, v in errors.items():
@@ -106,15 +118,24 @@ class Train:
 		for k in val_error.keys():
 			val_error[k] /= i_val_batch
 
+		sen, spe, acc, pre, mcc = self._cal_metric(tp, fp, tn, fn)
+
 		#visualize
 		#print and save val loss
-		print("val_error:")
-		print(val_error)
 		t = (time.time() - val_start_time)
 		self._print_current_validate_errors(i_epoch, val_error, t)
-
+		self._print_current_validate_metrics(i_epoch, sen, spe, acc, pre, mcc)
 		#set back to train
 		self._model.set_train()
+
+	def _cal_metric(self, tp, fp, tn, fn):
+		sen = tp/(tp+fn+0.00001)
+		spe = tn/(tn+fp+0.00001)
+		acc = (tp + tn)/(tp+fn+tn+fp+0.00001)
+		pre = tp/(tp+fp+0.00001)
+		mcc = (tp*tn - fn*fp)/(math.sqrt((tp+fn)*(tp+fp)*(tn+fn)*(tn+fp))+0.00001)
+
+		return sen, spe, acc, pre, mcc
 
 	def _print_current_train_errors(self, epoch, errors, t):
 		log_time = time.strftime("[%d/%m/%Y %H:%M:%S]")
@@ -136,8 +157,40 @@ class Train:
 		with open(self._log_path_val, "a") as log_file:
 			log_file.write('%s\n' % message)
 
+	def _print_current_validate_metrics(self, epoch, sen, spe, acc, pre, mcc):
+		log_time = time.strftime("[%d/%m/%Y %H:%M:%S]")
+		message = '%s, V, epoch: %d, sen: %.3f, spe: %.3f, acc: %.3f, pre: %.3f, mcc: %.3f' % (log_time, epoch, sen, spe, acc, pre, mcc)
+		print(message)
+		with open(self._log_path_val_metric, "a") as log_file:
+			log_file.write('%s\n' % message)
+
+def main():
+	file_data = 'D:\\TargetDNA\\sample_dataset\\data_dna.pkl'
+	file_train = 'D:\\TargetDNA\\sample_dataset\\train_ids.csv'
+	file_val = 'D:\\TargetDNA\\sample_dataset\\val_ids.csv'
+	split = 5
+	with open(file_data, 'rb') as f:
+		data = pickle.load(f)
+
+	data_size = len(data)
+	fold_size = int(data_size/5)
+	for seed in range(split):
+		hold_data = [k for k in range(0,data_size)]
+		val_part = [k for k in range(seed*fold_size, (seed+1)*fold_size)]
+		train_part = list(set(hold_data) - set(val_part))
+		with open(file_train, 'w') as f:
+			for item in train_part:
+				f.write("%s\n" % item)
+
+		with open(file_val, 'w') as f:
+			for item in val_part:
+				f.write("%s\n" % item)
+
+		Train(seed)
+
+
 if __name__ == '__main__':
-	Train()
+	main()
 
 
 

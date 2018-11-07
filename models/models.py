@@ -29,6 +29,7 @@ class BaseModel(object):
         self._is_train = opt.is_train
 
         self._Tensor = torch.cuda.FloatTensor if self._gpu_ids else torch.Tensor
+        self._TensorLabel = torch.cuda.LongTensor if self._gpu_ids else torch.LongTensor
         self._save_dir = os.path.join(opt.checkpoints_dir, opt.name)
 
 

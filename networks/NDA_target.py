@@ -21,6 +21,7 @@ class Network(NetworkBase):
 		
 		self.embed = nn.Sequential(*layers)
 		self.fc = nn.Linear(conv_dim, output_dim)
+		self.final = nn.Softmax()
 
 	def forward(self, input):
 		x = torch.unsqueeze(input, 1)
@@ -28,5 +29,6 @@ class Network(NetworkBase):
 		x = self.embed(x)
 		x = x.view(-1, self.feat_dim)
 		x = self.fc(x)
+		x = self.final(x)
 
 		return x
