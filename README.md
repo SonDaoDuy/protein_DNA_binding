@@ -1,6 +1,7 @@
 Mô tả
--------------
-###Phương pháp
+=============
+Phương pháp
+-----------
  *Chuẩn bị dữ liệu:
  File dữ liệu dùng để train là: PDNA-543_sequence.fasta. Trong đó với mỗi record ta có một sequence là chuỗi protein.
  File nhãn dùng để train là: PDNA-543_label.fasta. Trong đó tương ứng với mỗi phần tử protein đều được đánh nhãn 0 hoặc 1.
@@ -19,5 +20,6 @@ Mô tả
  - 1 dense layer với softmax 
  *Cách tạo embedding cho protein sequence:
  Tạo theo [DeepBind] (https://media.nature.com/original/nature-assets/nbt/journal/v33/n8/extref/nbt.3300-S2.pdf)
-###Kết quả:
+Kết quả:
+--------
 Xem trong checkpoints
