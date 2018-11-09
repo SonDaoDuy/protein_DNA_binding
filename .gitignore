@@ -112,7 +112,6 @@ sample_dataset_96/
 #model
 pretrain/
 snapshot/
-checkpoints/
 *.tar
 *.pth
 

@@ -1,0 +1,24 @@
+------------ Options -------------
+adam_b1: 0.5
+adam_b2: 0.999
+batch_size: 32
+checkpoints_dir: ./checkpoints
+data_dir: sample_dataset
+data_file: data_dna.pkl
+dataset_mode: dna
+gpu_ids: []
+is_train: True
+load_epoch: 37
+lr_net: 0.01
+model: DNA_model
+n_threads_test: 1
+n_threads_train: 4
+name: exp_1_val_2
+seed: 1
+seq_size: 20
+serial_batches: False
+test_ids_file: val_ids.csv
+threshold: 0.127
+total_epoch: 50
+train_ids_file: train_ids.csv
+-------------- End ----------------
