@@ -20,6 +20,7 @@ Phương pháp
  - 1 dense layer với softmax 
  *Cách tạo embedding cho protein sequence:
  Tạo theo [DeepBind] (https://media.nature.com/original/nature-assets/nbt/journal/v33/n8/extref/nbt.3300-S2.pdf)
+
 Kết quả:
 --------
 Xem trong checkpoints
