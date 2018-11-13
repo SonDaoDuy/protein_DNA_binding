@@ -166,15 +166,17 @@ class Train:
 
 def main():
 	_opt = TrainOptions().parse()
-	file_data = 'D:\\TargetDNA\\sample_dataset\\data_dna.pkl'
-	file_train = 'D:\\TargetDNA\\sample_dataset\\train_ids.csv'
-	file_val = 'D:\\TargetDNA\\sample_dataset\\val_ids.csv'
+	file_data = './sample_dataset/data_dna_v2.pkl'
+	#file_data = './sample_dataset/data_dna.pkl'
+	file_train = './sample_dataset/train_ids.csv'
+	file_val = './sample_dataset/val_ids.csv'
 	split = 5
 	seed = _opt.seed
 	with open(file_data, 'rb') as f:
 		data = pickle.load(f)
 
 	data_size = len(data)
+	#print("len of data_dna")
 	fold_size = int(data_size/5)
 	
 	hold_data = [k for k in range(0,data_size)]

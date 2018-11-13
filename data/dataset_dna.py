@@ -22,7 +22,8 @@ class DNADataset(DatasetBase):
 		while input_seq is None or seq_label is None:
 			sequence = self._seqs[index]
 			input_seq = self._sequence_to_embeb(sequence)
-			seq_label = np.array(self._lbs[index])
+			#seq_label = np.array(self._lbs[index])
+			seq_label = self._lbs[index]
 
 			if input_seq is None:
 				print("error reading sequence number %d" % format(index))
@@ -32,11 +33,11 @@ class DNADataset(DatasetBase):
 
 		#transform data
 		#in_seq =  self._transform(input_seq)
-		in_seq = torch.tensor(input_seq)
+		#in_seq = torch.tensor(input_seq)
 
 
 		#pack data
-		sample = {'in_seq': in_seq,
+		sample = {'in_seq': input_seq,
 				'label': seq_label
 				}
 
@@ -98,10 +99,10 @@ class DNADataset(DatasetBase):
 		emb = []
 		fill_num = 0.05
 		no_of_cell = 20
-		slide = 10
-		scan = 6
+		slide = self._opt.slide
+		scan = self._opt.scan
 		# m = 6, n = 10
-		for i in range(5):
+		for i in range(scan - 1):
 			row = [fill_num]*no_of_cell
 			emb.append(row)
 
@@ -109,7 +110,7 @@ class DNADataset(DatasetBase):
 			row = self._gen_one_hot(letter)
 			emb.append(row)
 
-		for i in range(5):
+		for i in range(scan - 1):
 			row = [fill_num]*no_of_cell
 			emb.append(row)
 

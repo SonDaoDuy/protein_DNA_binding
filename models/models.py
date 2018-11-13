@@ -12,6 +12,9 @@ class ModelsFactory:
         if model_name == 'DNA_model':
             from .DNA_model import DNAmodel
             model = DNAmodel(*args, **kwargs)
+        elif model_name == 'DNA_model_v2':
+            from .DNA_model_v2 import DNAmodelv2
+            model = DNAmodelv2(*args, **kwargs)
         else:
             raise ValueError("Model %s not recognized." % model_name)
 

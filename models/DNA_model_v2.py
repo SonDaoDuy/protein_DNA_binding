@@ -6,11 +6,11 @@ from networks.networks import NetworksFactory
 import os
 import numpy as np
 
-class DNAmodel(BaseModel):
-	"""docstring for DNAmodel"""
+class DNAmodelv2(BaseModel):
+	"""docstring for DNAmodelv2"""
 	def __init__(self, opt):
-		super(DNAmodel, self).__init__(opt)
-		self._name = 'DNA_model'
+		super(DNAmodelv2, self).__init__(opt)
+		self._name = 'DNA_model_v2'
 
 		#create network
 		self._init_create_networks()
@@ -30,8 +30,8 @@ class DNAmodel(BaseModel):
 		self._init_losses()
 
 	def _init_create_networks(self):
-		self._net = self._create_network('DNA_target')
-		#self._net = self._create_network('DNA_target_v2')
+		#self._net = self._create_network('DNA_target')
+		self._net = self._create_network('DNA_target_v2')
 		self._net.init_weights()
 
 		if len(self._gpu_ids) > 1:
@@ -51,16 +51,17 @@ class DNAmodel(BaseModel):
 		# 	betas=[self._opt.adam_b1, self._opt.adam_b2])
 
 	def _init_prefetch_inputs(self):
-		self._input_sequence = self._Tensor(self._opt.batch_size, 1, self._opt.seq_size, self._opt.seq_size)
-		self._label = self._Tensor(self._opt.batch_size, self._opt.seq_size)
+		self._input_sequence = self._Tensor(self._opt.batch_size, 1, (self._opt.slide + 2*(self._opt.scan - 1)), self._opt.seq_size)
+		self._label = self._TensorLabel(self._opt.batch_size, 1)
 
 	def _init_losses(self):
 		#define loss function
+		weight = torch.tensor([0.1, 0.9])
 		if len(self._gpu_ids) > 0:
 			#self._criterion_net = torch.nn.MSELoss().cuda()
-			self._criterion_net = torch.nn.BCELoss().cuda()
+			self._criterion_net = torch.nn.CrossEntropyLoss(weight=weight).cuda()
 		else:
-			self._criterion_net = torch.nn.BCELoss()
+			self._criterion_net = torch.nn.CrossEntropyLoss(weight=weight)
 			#self._criterion_net = torch.nn.MSELoss()
 
 		#define loss
@@ -94,23 +95,34 @@ class DNAmodel(BaseModel):
 
 			#go through net
 			predict = self._net(input_seq)
+			#predict = torch.squeeze(predict)
 
 			#return something here for validation
 			self._net_loss = self._criterion_net(predict, label)
 			
 			#metric calcalate
 			for i in range(predict.size(0)):
-				for j in range(predict.size(1)):
-					if predict[i][j] < self._opt.threshold:
-						if label[i][j] == 0:
-							tn += 1
-						else:
-							fn += 1
+				if predict[i][1] < predict[i][0]:
+					if label[i].item() == 0:
+						tn += 1
 					else:
-						if label[i][j] == 0:
-							fp += 1
-						else:
-							tp += 1
+						fn += 1
+				else:
+					if label[i].item() == 0:
+						fp += 1
+					else:
+						tp += 1
+				# if predict[i].item() < self._opt.threshold:
+				# 	if label[i].item() == 0:
+				# 		tn += 1
+				# 	else:
+				# 		fn += 1
+				# else:
+				# 	if label[i].item() == 0:
+				# 		fp += 1
+				# 	else:
+				# 		tp += 1
+					
 
 			return tp, fp, tn, fn
 
@@ -129,12 +141,13 @@ class DNAmodel(BaseModel):
 
 	def _forward_net(self):
 		predict_lb = self._net(self._input_seq)
+		#predict_lb = torch.squeeze(predict_lb)
 		self._net_loss = self._criterion_net(predict_lb, self._in_label)
 		return self._net_loss
 
 	def get_current_errors(self):
 		loss_dict = OrderedDict([
-			('net_loss', self._net_loss.data[0])])
+			('net_loss', self._net_loss.item())])
 
 		return loss_dict
 

@@ -3,14 +3,14 @@ import numpy as np
 from .networks import NetworkBase
 import torch
 
-class Network(NetworkBase):
-	"""docstring for Network
+class Networkv2(NetworkBase):
+	"""docstring for Networkv2
 	n = 10
 	m = 6
 	"""
 	def __init__(self, conv_dim = 22, input_dim = 1, output_dim = 2):
-		super(Network, self).__init__()
-		self._name = 'NDA_target'
+		super(Networkv2, self).__init__()
+		self._name = 'NDA_target_v2'
 		self.feat_dim = conv_dim
 
 		layers = []
@@ -20,8 +20,11 @@ class Network(NetworkBase):
 		layers.append(nn.AvgPool2d((16,1), stride=(1,1))) #B*conv_dim*16*1 -> B*conv_dim*1*1
 		
 		self.embed = nn.Sequential(*layers)
-		self.fc = nn.Linear(conv_dim, output_dim)
-		self.final = nn.Softmax()
+
+		layers = []
+		layers.append(nn.Linear(conv_dim, output_dim))
+		#layers.append(nn.Softmax())
+		self.fc = nn.Sequential(*layers)
 
 	def forward(self, input):
 		x = torch.unsqueeze(input, 1)
@@ -29,6 +32,5 @@ class Network(NetworkBase):
 		x = self.embed(x)
 		x = x.view(-1, self.feat_dim)
 		x = self.fc(x)
-		x = self.final(x)
 
 		return x

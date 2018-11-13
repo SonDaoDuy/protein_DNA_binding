@@ -11,6 +11,9 @@ class NetworksFactory:
         if network_name == 'DNA_target':
             from .NDA_target import Network
             network = Network(*args, **kwargs)
+        elif network_name == 'DNA_target_v2':
+            from .DNA_target_v2 import Networkv2
+            network = Networkv2(*args, **kwargs)
         else:
             raise ValueError("Network %s not recognized." % network_name)
 
