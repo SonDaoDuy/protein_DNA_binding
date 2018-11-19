@@ -1,0 +1,15 @@
+[16/11/2018 22:16:05], epoch: 1, t/smpl: 0.003s, net_loss: 0.609 
+[16/11/2018 22:16:31], epoch: 2, t/smpl: 0.035s, net_loss: 0.596 
+[16/11/2018 22:16:57], epoch: 3, t/smpl: 0.035s, net_loss: 0.594 
+[16/11/2018 22:17:23], epoch: 4, t/smpl: 0.002s, net_loss: 0.593 
+[16/11/2018 22:17:48], epoch: 5, t/smpl: 0.003s, net_loss: 0.591 
+[16/11/2018 22:18:14], epoch: 6, t/smpl: 0.002s, net_loss: 0.586 
+[16/11/2018 22:18:40], epoch: 7, t/smpl: 0.003s, net_loss: 0.588 
+[16/11/2018 22:19:05], epoch: 8, t/smpl: 0.004s, net_loss: 0.586 
+[16/11/2018 22:19:30], epoch: 9, t/smpl: 0.003s, net_loss: 0.584 
+[16/11/2018 22:19:56], epoch: 10, t/smpl: 0.004s, net_loss: 0.585 
+[16/11/2018 22:20:21], epoch: 11, t/smpl: 0.024s, net_loss: 0.583 
+[16/11/2018 22:24:51], epoch: 12, t/smpl: 0.036s, net_loss: 0.584 
+[16/11/2018 22:25:13], epoch: 13, t/smpl: 0.004s, net_loss: 0.583 
+[16/11/2018 22:25:35], epoch: 14, t/smpl: 0.035s, net_loss: 0.580 
+[16/11/2018 22:25:57], epoch: 15, t/smpl: 0.004s, net_loss: 0.581 

@@ -1,0 +1,2 @@
+[16/11/2018 18:02:31], Test, epoch: 1, time_to_val: 2s, net_loss: 0.548 
+[16/11/2018 18:02:49], Test, epoch: 2, time_to_val: 2s, net_loss: 0.548 

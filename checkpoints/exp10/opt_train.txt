@@ -1,0 +1,31 @@
+------------ Options -------------
+adam_b1: 0.5
+adam_b2: 0.999
+batch_size: 32
+checkpoints_dir: ./checkpoints
+data_dir: ./sample_dataset/
+data_file: train_data_dna.txt
+dataset_mode: dna
+gpu_ids: []
+is_train: True
+label_file: train_label_dna.txt
+load_epoch: 0
+lr_net: 0.01
+model: DNA_model_v2
+n_threads_test: 1
+n_threads_train: 4
+name: exp10
+scan: 6
+seed: 0
+seq_size: 20
+serial_batches: False
+slide: 11
+test_data_file: test_data_dna.txt
+test_ids_file: val_ids.csv
+test_label_file: test_label_dna.txt
+threshold: 0.9
+total_epoch: 180
+train_ids_file: train_ids.csv
+val_data_file: val_data_dna.txt
+val_label_file: val_label_dna.txt
+-------------- End ----------------
