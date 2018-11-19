@@ -32,6 +32,7 @@ class DNAmodelv2(BaseModel):
 	def _init_create_networks(self):
 		#self._net = self._create_network('DNA_target')
 		self._net = self._create_network('DNA_target_v2')
+		#self._net = self._create_network('DNA_target_v3')
 		self._net.init_weights()
 
 		if len(self._gpu_ids) > 1:
@@ -46,11 +47,12 @@ class DNAmodelv2(BaseModel):
 		self._current_lr_net = self._opt.lr_net
 
 		#init optimizer
-		self._optimizer_net = torch.optim.SGD(self._net.parameters(), lr=0.1, momentum=0.9)
+		self._optimizer_net = torch.optim.SGD(self._net.parameters(), lr=0.001, momentum=0.9)
 		# self._optimizer_net = torch.optim.Adam(self._net.parameters(), lr=self._current_lr_net,
 		# 	betas=[self._opt.adam_b1, self._opt.adam_b2])
 
 	def _init_prefetch_inputs(self):
+		#self._input_sequence = self._Tensor(self._opt.batch_size, 1, self._opt.slide, self._opt.seq_size)
 		self._input_sequence = self._Tensor(self._opt.batch_size, 1, (self._opt.slide + 2*(self._opt.scan - 1)), self._opt.seq_size)
 		self._label = self._TensorLabel(self._opt.batch_size, 1)
 
@@ -61,8 +63,9 @@ class DNAmodelv2(BaseModel):
 			#self._criterion_net = torch.nn.MSELoss().cuda()
 			self._criterion_net = torch.nn.CrossEntropyLoss(weight=weight).cuda()
 		else:
-			self._criterion_net = torch.nn.CrossEntropyLoss(weight=weight)
-			#self._criterion_net = torch.nn.MSELoss()
+			#self._criterion_net = torch.nn.CrossEntropyLoss(weight=weight)
+			#self._criterion_net = torch.nn.BCELoss()
+			self._criterion_net = torch.nn.NLLLoss(weight=weight)
 
 		#define loss
 		self._net_loss = Variable(self._Tensor([0]))
@@ -95,14 +98,15 @@ class DNAmodelv2(BaseModel):
 
 			#go through net
 			predict = self._net(input_seq)
-			#predict = torch.squeeze(predict)
+			predict = torch.squeeze(predict)
+			#print("predict: %s" % format(predict.data))
 
 			#return something here for validation
 			self._net_loss = self._criterion_net(predict, label)
 			
 			#metric calcalate
 			for i in range(predict.size(0)):
-				if predict[i][1] < predict[i][0]:
+				if predict[i][1] < predict[i][0] or predict[i][1] < 0:
 					if label[i].item() == 0:
 						tn += 1
 					else:
@@ -112,6 +116,20 @@ class DNAmodelv2(BaseModel):
 						fp += 1
 					else:
 						tp += 1
+
+				#BCELoss
+				# if predict[i][1] < predict[i][0]:
+				# 	if label[i][0] == 1:
+				# 		tn += 1
+				# 	else:
+				# 		fn += 1
+				# else:
+				# 	if label[i][1] == 1:
+				# 		fp += 1
+				# 	else:
+				# 		tp += 1
+
+				#Loss for sequence label and BCELoss with 1-dim output
 				# if predict[i].item() < self._opt.threshold:
 				# 	if label[i].item() == 0:
 				# 		tn += 1
@@ -141,7 +159,7 @@ class DNAmodelv2(BaseModel):
 
 	def _forward_net(self):
 		predict_lb = self._net(self._input_seq)
-		#predict_lb = torch.squeeze(predict_lb)
+		predict_lb = torch.squeeze(predict_lb)
 		self._net_loss = self._criterion_net(predict_lb, self._in_label)
 		return self._net_loss
 

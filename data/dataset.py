@@ -9,10 +9,10 @@ class DatasetFactory:
         pass
 
     @staticmethod
-    def get_by_name(dataset_name, opt, is_for_train):
+    def get_by_name(dataset_name, opt, is_for_train, is_for_val):
         if dataset_name == 'dna':
             from data.dataset_dna import DNADataset
-            dataset = DNADataset(opt, is_for_train)
+            dataset = DNADataset(opt, is_for_train, is_for_val)
         else:
             raise ValueError("Dataset [%s] not recognized." % dataset_name)
 
@@ -21,12 +21,13 @@ class DatasetFactory:
 
 
 class DatasetBase(data.Dataset):
-    def __init__(self, opt, is_for_train):
+    def __init__(self, opt, is_for_train, is_for_val):
         super(DatasetBase, self).__init__()
         self._name = 'BaseDataset'
         self._root = None
         self._opt = opt
         self._is_for_train = is_for_train
+        self._is_for_val = is_for_val
         self._create_transform()
 
     @property

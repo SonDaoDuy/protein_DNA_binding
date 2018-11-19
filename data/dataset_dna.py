@@ -8,28 +8,36 @@ import torch
 
 class DNADataset(DatasetBase):
 	"""docstring for DNADataset"""
-	def __init__(self, opt, is_for_train):
-		super(DNADataset, self).__init__(opt, is_for_train)
+	def __init__(self, opt, is_for_train, is_for_val):
+		super(DNADataset, self).__init__(opt, is_for_train, is_for_val)
 		self._name = 'DNADataset'
 		#read dataset
 		self._read_dataset_paths()
 
 	def __getitem__(self, index):
 		assert (index < self._dataset_size)
-
+		#print("data len : %s" % format(self._dataset_size))
 		input_seq = None
 		seq_label = None
 		while input_seq is None or seq_label is None:
+			# if self._is_for_train:
+			# 	index = random.randint(0, self._dataset_size - 1)
+				#print("index: %s" % format(index))
+
 			sequence = self._seqs[index]
 			input_seq = self._sequence_to_embeb(sequence)
 			#seq_label = np.array(self._lbs[index])
+			# if self._lbs[index] == 1:
+			# 	seq_label = torch.tensor([0, 1])
+			# else:
+			# 	seq_label = torch.tensor([1, 0])
 			seq_label = self._lbs[index]
 
 			if input_seq is None:
-				print("error reading sequence number %d" % format(index))
+				print("error reading sequence number %s" % format(index))
 
 			if seq_label is None:
-				print("error reading sequence label number %d" % format(index))
+				print("error reading sequence label number %s" % format(index))
 
 		#transform data
 		#in_seq =  self._transform(input_seq)
@@ -48,15 +56,28 @@ class DNADataset(DatasetBase):
 
 	def _read_dataset_paths(self):
 		self._root = self._opt.data_dir
-		data_file = os.path.join(self._root, self._opt.data_file)
-		data_dna, label_dna = self._read_data_file(data_file)
+		if self._is_for_train:
+			data_file = os.path.join(self._root, self._opt.data_file)
+			label_file = os.path.join(self._root, self._opt.label_file)
+			self._seqs = self._read_data_file(data_file)
+			self._lbs = self._read_label_file(label_file)
+		elif self._is_for_val:
+			data_file = os.path.join(self._root, self._opt.val_data_file)
+			label_file = os.path.join(self._root, self._opt.val_label_file)
+			self._seqs = self._read_data_file(data_file)
+			self._lbs = self._read_label_file(label_file)
+		else:
+			data_file = os.path.join(self._root, self._opt.test_data_file)
+			label_file = os.path.join(self._root, self._opt.test_label_file)
+			self._seqs = self._read_data_file(data_file)
+			self._lbs = self._read_label_file(label_file)
 
 		#read seqs and lbs
-		use_ids_filename = self._opt.train_ids_file if self._is_for_train else self._opt.test_ids_file
-		use_ids_filepath = os.path.join(self._root, use_ids_filename)
-		ids = self._read_ids(use_ids_filepath)
-		self._seqs = self._read_seqs(ids, data_dna)
-		self._lbs = self._read_lbs(ids, label_dna)
+		# use_ids_filename = self._opt.train_ids_file if self._is_for_train else self._opt.test_ids_file
+		# use_ids_filepath = os.path.join(self._root, use_ids_filename)
+		# ids = self._read_ids(use_ids_filepath)
+		# self._seqs = self._read_seqs(ids, data_dna)
+		# self._lbs = self._read_lbs(ids, label_dna)
 
 		print("sequence size: %s" % format(len(self._seqs)))
 		print("label size: %s" % format(len(self._lbs)))
@@ -85,15 +106,19 @@ class DNADataset(DatasetBase):
 
 	def _read_data_file(self, data_file):
 		data_dna = []
+		with open(data_file, 'r') as f:
+			for line in f:
+				data_dna.append(line[:-1])
+
+		return data_dna
+
+	def _read_label_file(self, label_file):
 		label_dna = []
-		with open(data_file, 'rb') as f:
-			data = pickle.load(f)
+		with open(label_file, 'r') as f:
+			for line in f:
+				label_dna.append(int(line[:-1]))
 
-		for i,k in data.items():
-			data_dna.append(i)
-			label_dna.append(k)
-
-		return data_dna, label_dna
+		return label_dna
 
 	def _sequence_to_embeb(self, sequence):
 		emb = []

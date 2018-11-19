@@ -113,6 +113,7 @@ sample_dataset_96/
 pretrain/
 snapshot/
 checkpoints/
+checkpoints/*/*.pth
 *.tar
 *.pth
 

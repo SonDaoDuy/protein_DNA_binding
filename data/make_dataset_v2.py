@@ -6,12 +6,14 @@ import os
 def main():
 	data_file = './PDNA-543_sequence.fasta'
 	label_file = './PDNA-543_label.fasta'
-	dna_data_file = './sample_dataset/data_dna_v2.pkl'
+	# dna_data_file = './sample_dataset/data_dna_v2.pkl'
+	data_file_save = './sample_dataset/data_dna.txt'
+	label_file_save = './sample_dataset/label_dna.txt'
 	
 	data = []
 	#get dnd seq
 	count = 0
-	size = 5
+	size = 4
 	for record in  SeqIO.parse(data_file, "fasta"):
 		index = 0
 		while index < len(record.seq):
@@ -60,12 +62,12 @@ def main():
 	# 	print(label[99-i])
 	print(len(data))
 	print(len(label))
-	for i in range(len(data)):
-		#print(i)
-		packed_data[data[i]] = label[i]
-
-	with open(dna_data_file, 'wb') as f:
-		pickle.dump(packed_data, f, pickle.HIGHEST_PROTOCOL)
+	with open(data_file_save, 'w') as f:
+		for i in range(len(data)):
+			f.write("%s\n" % format(data[i]))
+	with open(label_file_save, 'w') as f:
+		for i in range(len(label)):
+			f.write("%s\n" % format(label[i]))
 
 if __name__ == '__main__':
 	main()
